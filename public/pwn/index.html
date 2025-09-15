@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en-us" data-theme="light">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>
+  Pwn - l0key blog
+</title>
+
+
+
+<meta name="description" content="" />
+
+
+
+<meta
+  property="og:title"
+  content="Pwn"
+/>
+<meta
+  property="og:description"
+  content=""
+/>
+<meta
+  property="og:type"
+  content="website"
+/>
+<meta property="og:url" content="http://localhost:1313/pwn/" />
+<meta property="og:site_name" content="l0key blog" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta
+  name="twitter:title"
+  content="Pwn"
+/>
+<meta
+  name="twitter:description"
+  content=""
+/>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+
+<link rel="stylesheet" href="http://localhost:1313/css/style.css">
+
+
+<link
+  rel="alternate"
+  type="application/rss&#43;xml"
+  href="http://localhost:1313/pwn/index.xml"
+/>
+
+</head>
+<body>
+    
+    <div class="reading-progress"></div>
+    
+
+    
+    <header class="site-header">
+    <nav>
+        <div class="nav-left">
+            <a href="http://localhost:1313/" class="logo">l0key blog</a>
+        </div>
+
+        <div class="nav-links">
+            
+            <a href="http://localhost:1313/home" class="nav-link">Home</a>
+            
+            <a href="http://localhost:1313/posts" class="nav-link">Posts</a>
+            
+            <a href="http://localhost:1313/about" class="nav-link">About</a>
+            
+            <a href="http://localhost:1313/contact" class="nav-link">Contact</a>
+            
+        </div>
+
+        <div class="header-controls">
+            <button class="search-toggle" title="Search posts">🔍</button>
+            <button class="theme-toggle" title="Toggle dark mode">🌙</button>
+        </div>
+    </nav>
+
+    
+    <div class="search-form-container" id="searchForm">
+        <div class="search-form">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="Search posts..." autocomplete="off">
+                <button class="search-submit" type="button">
+                    <span>🔍</span>
+                </button>
+                <button class="search-close" type="button">
+                    <span>✕</span>
+                </button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+</header>
+
+    
+
+    <main>
+        
+<div class="container">
+  <div class="taxonomy-header">
+    <h1 class="taxonomy-title">All Tags</h1>
+    <p class="taxonomy-subtitle">
+      Explore content by topic and find exactly what you're looking for
+    </p>
+  </div>
+
+  <div class="tags-cloud">
+    
+    <a
+      href="http://localhost:1313/tags/misc/"
+      class="tag-cloud-item"
+      data-count="2"
+    >
+      <span class="tag-name">Misc</span>
+      <span class="tag-count">2</span>
+    </a>
+    
+  </div>
+
+  <div class="tags-list">
+    <h2 class="section-title">Browse by Category</h2>
+    <div class="tags-grid">
+      
+      <div class="tag-card">
+        <div class="tag-card-header">
+          <h3><a href="http://localhost:1313/tags/misc/">Misc</a></h3>
+          <span class="post-count"
+            >2 posts</span
+          >
+        </div>
+        <div class="tag-preview">
+          
+          <p class="preview-post">
+            <a href="http://localhost:1313/about/about/">My First Post</a>
+          </p>
+          
+          <p class="preview-post">
+            <a href="http://localhost:1313/posts/my-first-post/">My First Post</a>
+          </p>
+           
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+    </main>
+
+    
+    <div class="ambient-bar">
+    <div class="ambient-controls">
+        <button class="mute-toggle muted" title="Toggle ambient sounds">
+            <i class="fas fa-volume-mute"></i>
+        </button>
+        <button class="ambient-icon" data-sound="coffee" title="Coffee Shop Ambience">
+            <i class="fas fa-coffee"></i>
+        </button>
+        <button class="ambient-icon" data-sound="rain" title="Gentle Rain">
+            <i class="fas fa-cloud-rain"></i>
+        </button>
+        <button class="ambient-icon" data-sound="fireplace" title="Crackling Fireplace">
+            <i class="fas fa-fire"></i>
+        </button>
+    </div>
+
+    <div class="ambient-label">Click to start ambient sounds</div>
+
+    <div class="volume-container">
+        <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="">
+        <div class="equalizer muted">
+            
+            <div class="equalizer-bar"></div>
+            
+            <div class="equalizer-bar"></div>
+            
+            <div class="equalizer-bar"></div>
+            
+            <div class="equalizer-bar"></div>
+            
+            <div class="equalizer-bar"></div>
+            
+            <div class="equalizer-bar"></div>
+            
+            <div class="equalizer-bar"></div>
+            
+            <div class="equalizer-bar"></div>
+            
+        </div>
+    </div>
+</div>
+
+    
+
+    <script src="http://localhost:1313/js/main.js"></script>
+</body>
+</html>

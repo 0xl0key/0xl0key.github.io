@@ -1,3 +1,57 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://l0key.github.io/'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'l0key blog'
+theme = "loficode"
+
+[params]
+
+  [params.author]
+    name = "Mayeul Fargier"
+    image ="/images/loki.jpg"
+
+  [params.profile]
+    name = "l0key"
+    tagline = "101"
+    photo = "/images/loki.jpg"
+
+  [[params.social]]
+    icon = "github"
+    name = "github"
+    url = "https://github.com/Async-Mayeul"
+
+  [[params.social]]
+    icon = "linkedin"
+    name = "linkedin"
+    url = "https://www.linkedin.com/in/mayeulfargier/"
+
+  [[menu.main]]
+    identifier = "Posts"
+    name = "Posts"
+    url = "/posts"
+    weight = 2
+  [[menu.main]]
+    identifier = "About"
+    name = "About"
+    url = "/about"
+    weight = 3
+  [[menu.main]]
+    identifier = "Home"
+    name = "Home"
+    url = "/home"
+    weight = 1
+  [[menu.main]]
+    identifier = "Contact"
+    name = "Contact"
+    url = "/contact"
+    weight = 4
+
+[taxonomies]
+  category = "blog"
+  tag = "tags"
+  misc = "misc"
+  reverse = "reverse"
+  rust = "rust"
+  cpp = "cpp"
+  llm = "llm"
+  pwn = "pwn"
+  maldev = "maldev"
