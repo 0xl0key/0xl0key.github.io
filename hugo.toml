@@ -1,4 +1,4 @@
-baseURL = 'https://l0key.github.io/'
+baseURL = 'https://async-mayeul.github.io/'
 languageCode = 'en-us'
 title = 'l0key blog'
 theme = "loficode"
