@@ -5,6 +5,8 @@ theme = "loficode"
 
 [params]
 
+  customCSS = ["/css/custom.css"]
+
   [params.author]
     name = "Mayeul Fargier"
     image ="/images/loki.jpg"

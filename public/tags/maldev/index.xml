@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Maldev on l0key blog</title>
+    <link>http://localhost:1313/tags/maldev/</link>
+    <description>Recent content in Maldev on l0key blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 12 Oct 2025 21:07:38 +0200</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/maldev/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Weaponizing Font Policies for Payload Embedding </title>
+      <link>http://localhost:1313/posts/woff2/</link>
+      <pubDate>Sun, 12 Oct 2025 21:07:38 +0200</pubDate>
+      <guid>http://localhost:1313/posts/woff2/</guid>
+      <description>&lt;p&gt;We will see how the WOFF2 format can be abused to host shellcode and how the WinAPI, through its font-handling functions, can be leveraged to trigger its execution.&lt;/p&gt;&#xA;&lt;h2 id=&#34;overview-of-woff2&#34;&gt;Overview of WOFF2&lt;/h2&gt;&#xA;&lt;p&gt;WOFF2 is a file format proposed by Google in 2013 to replace the WOFF1 format. It provides better compression of font data for use in CSS.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Supports OpenType and TrueType (SFNT) specifications&lt;/li&gt;&#xA;&lt;li&gt;Uses the Brotli compression algorithm&lt;/li&gt;&#xA;&lt;li&gt;Primarily developed for the Web to enable faster page loading&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;woff2-structure&#34;&gt;WOFF2 structure&lt;/h3&gt;&#xA;&lt;p&gt;WOFF2 is composed of several blocks. A header that lets you navigate the file format. The other blocks contain the data necessary to define the font. The block that interests us is Private Data. This is an optional block that allows the font author to include whatever information they want; it can contain ASCII, Unicode text, or raw data, provided those data do not interfere with font loading.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

