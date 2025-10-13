@@ -55,7 +55,7 @@ def add_private_block(input_file, output_file, private_data):
 
 We define a function `add_private_block` that takes as input a font file (`input_file`), an output file name (`output_file`) and the private data block (`private_data`) that will contain our shellcode. The font is loaded with the `TTFont` class. With `font.flavor` we force the file format to WOFF2. If no private data block is already present, the code creates a `WOFF2FlavorData` object and inserts the specified data into its `privData` attribute. Then we save the generated WOFF2 file.
 
-The full script is available on my GitHub: LINK
+The full script is available on my GitHub: https://github.com/0xl0key
 ## Loader Part
 
 The final part consists of writing a WOFF2 file parser to retrieve our shellcode and then using the WinAPI to execute our shellcode.
@@ -182,7 +182,7 @@ BOOL CALLBACK EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, DWORD FontT
 
 This loader is a POC so I do not guarantee it can bypass AV/EDR. As you can see I use the PAGE_EXECUTE_READWRITE permissions which are not recommended for a functional loader because they are directly detected by security solutions.
 
-You can find the complete loader code on my GitHub: LINK
+You can find the complete loader code on my GitHub: https://github.com/0xl0key
 ## Demonstration
 
 Generation of the WOFF2 file armed with the shellcode:  

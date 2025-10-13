@@ -6,8 +6,22 @@
     <description>Recent content on l0key blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Oct 2025 21:07:38 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 13 Oct 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>&lt;h2 id=&#34;about-me&#34;&gt;About Me&lt;/h2&gt;&#xA;&lt;p&gt;Simply passionate about computer science&lt;/p&gt;&#xA;&lt;h3 id=&#34;my-crush&#34;&gt;My Crush&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Reverse Engineering&lt;/li&gt;&#xA;&lt;li&gt;Programmation (C/C++/Python)&lt;/li&gt;&#xA;&lt;li&gt;Maldev&lt;/li&gt;&#xA;&lt;li&gt;All about pentesting&lt;/li&gt;&#xA;&lt;li&gt;Chess&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;why-this-blog-&#34;&gt;Why this blog ?&lt;/h3&gt;&#xA;&lt;p&gt;cause&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Contact</title>
+      <link>http://localhost:1313/contact/</link>
+      <pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/contact/</guid>
+      <description>&lt;h2 id=&#34;social&#34;&gt;Social&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Discord&lt;/strong&gt;: &lt;code&gt;0xl0key&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;GitHub&lt;/strong&gt;: &lt;a href=&#34;https://github.com/0xl0key&#34;&gt;github.com/0xl0key&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;LinkedIn&lt;/strong&gt;: &lt;a href=&#34;https://www.linkedin.com/in/mayeulfargier/&#34;&gt;linkedin.com/in/mayeulfargier&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
     <item>
       <title>Hackropole : PORS</title>
       <link>http://localhost:1313/posts/pors/hackropole_pors/</link>

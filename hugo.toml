@@ -1,4 +1,4 @@
-baseURL = 'https://async-mayeul.github.io/'
+baseURL = 'https://0xl0key.github.io/'
 languageCode = 'en-us'
 title = 'l0key blog'
 theme = "loficode"
@@ -19,12 +19,17 @@ theme = "loficode"
   [[params.social]]
     icon = "github"
     name = "github"
-    url = "https://github.com/Async-Mayeul"
+    url = "https://github.com/0xl0key"
 
   [[params.social]]
     icon = "linkedin"
     name = "linkedin"
     url = "https://www.linkedin.com/in/mayeulfargier/"
+
+  [[params.social]]
+    icon = "discord"
+    name = "discord"
+    url = "https://discord.com/users/265059543799562252"
 
   [[menu.main]]
     identifier = "Posts"
@@ -39,7 +44,7 @@ theme = "loficode"
   [[menu.main]]
     identifier = "Home"
     name = "Home"
-    url = "/home"
+    url = "/"
     weight = 1
   [[menu.main]]
     identifier = "Contact"
