@@ -105,7 +105,7 @@ When a process receives a signal (SIGSEGV, SIGINT...), it proceeds as follows:
 SROP abuses this system by forging a fake signal frame representing the context and then calling the sigreturn syscall. Thus, the program resumes with the fake frame, with register values that we control.
 
 The fake signal frame looks like this:
-![[frame.png]]
+![frame](frame.png)
 ## Extracting the Real Program
 
 Our program here uses the SROP technique to execute the real program, which verifies our input.
