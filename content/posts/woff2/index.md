@@ -182,7 +182,7 @@ BOOL CALLBACK EnumFamCallBack(LPLOGFONT lplf, LPNEWTEXTMETRIC lpntm, DWORD FontT
 
 This loader is a POC so I do not guarantee it can bypass AV/EDR. As you can see I use the PAGE_EXECUTE_READWRITE permissions which are not recommended for a functional loader because they are directly detected by security solutions.
 
-You can find the complete loader code on my GitHub: https://github.com/0xl0key
+You can find the complete loader code on my GitHub: [https://github.com/0xl0key](https://github.com/0xl0key/WOFF2FontLoader)
 ## Demonstration
 
 Generation of the WOFF2 file armed with the shellcode:  
